@@ -1,0 +1,13 @@
+{
+  "Author": "Grig Orig",
+  "Name": "FFXIV Calc",
+  "Punchline": "Simple calculator command",
+  "Description": "Allows the player to do simple math throught the chat window via the /pcalc command follwed by the formula to calculate.",
+  "InternalName": "ffxivCalc",
+  "ApplicableVersion": "any",
+  "Tags": [
+    "sample",
+    "plugin",
+    "goats"
+  ]
+}

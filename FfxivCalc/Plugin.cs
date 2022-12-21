@@ -1,22 +1,27 @@
 ﻿using Dalamud.Game.Command;
 using Dalamud.IoC;
 using Dalamud.Plugin;
+using Dalamud.Game.Gui;
+using Dalamud.Game.Text;
 using System.IO;
-using System.Reflection;
 using Dalamud.Interface.Windowing;
-using SamplePlugin.Windows;
+using FfxivCalc.Windows;
+using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Game.Text.SeStringHandling;
 
-namespace SamplePlugin
+namespace FfxivCalc
 {
     public sealed class Plugin : IDalamudPlugin
     {
-        public string Name => "Sample Plugin";
-        private const string CommandName = "/pmycommand";
+        public string Name => "FFXIV Calc";
+        private const string CommandName = "/pcalc";
 
         private DalamudPluginInterface PluginInterface { get; init; }
         private CommandManager CommandManager { get; init; }
         public Configuration Configuration { get; init; }
-        public WindowSystem WindowSystem = new("SamplePlugin");
+        public WindowSystem WindowSystem = new("FfxivCalc");
+
+        [PluginService] public static ChatGui ChatGui { get; private set; } = null!;
 
         public Plugin(
             [RequiredVersion("1.0")] DalamudPluginInterface pluginInterface,
@@ -37,7 +42,7 @@ namespace SamplePlugin
 
             this.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand)
             {
-                HelpMessage = "A useful message to display in /xlhelp"
+                HelpMessage = "Calculates formula given in args"
             });
 
             this.PluginInterface.UiBuilder.Draw += DrawUI;
@@ -52,8 +57,20 @@ namespace SamplePlugin
 
         private void OnCommand(string command, string args)
         {
-            // in response to the slash command, just display our main ui
-            WindowSystem.GetWindow("My Amazing Window").IsOpen = true;
+            var textPayload = new Payload[] {
+                new TextPayload("Hello World")
+            };
+
+            var seString = new SeString(textPayload);
+
+            var xivChat = new XivChatEntry() {
+                Message = seString
+            };
+
+            xivChat.Type = XivChatType.SystemMessage;
+            xivChat.Name = this.Name;
+
+            ChatGui.PrintChat(xivChat);
         }
 
         private void DrawUI()
@@ -63,7 +80,7 @@ namespace SamplePlugin
 
         public void DrawConfigUI()
         {
-            WindowSystem.GetWindow("A Wonderful Configuration Window").IsOpen = true;
+            WindowSystem.GetWindow("Calculator Configuration").IsOpen = true;
         }
     }
 }
